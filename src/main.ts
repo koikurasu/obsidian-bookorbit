@@ -145,6 +145,7 @@ export default class BookOrbitPlugin extends Plugin {
 			coverFolder: this.settings.coverFolder,
 			openNoteAfterCreation: this.settings.openNoteAfterCreation,
 			bookorbitUrl: this.settings.serverUrl,
+			enableTemplaterIntegration: this.settings.enableTemplaterIntegration,
 		};
 
 		const downloadCoverFn = async (bookId: number) => {

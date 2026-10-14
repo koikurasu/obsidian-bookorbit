@@ -4,6 +4,7 @@ import type { LanguageFormat } from '../language';
 import { renderTemplate } from '../template/engine';
 import { sanitizeFilename, resolveFilename } from '../utils/filename';
 import { findExistingNoteByBookOrbitId } from './duplicate-checker';
+import { useTemplaterPluginInFile } from '../utils/templater';
 
 export interface NoteCreationOptions {
 	outputFolder: string;
@@ -15,6 +16,7 @@ export interface NoteCreationOptions {
 	coverFolder: string;
 	openNoteAfterCreation: boolean;
 	bookorbitUrl: string;
+	enableTemplaterIntegration: boolean;
 }
 
 export async function createBookNote(
@@ -104,6 +106,17 @@ export async function createBookNote(
 
 	// Create note
 	const createdFile = await vault.create(filePath, renderedContent);
+
+	// Run Templater on the new file if integration is enabled
+	if (options.enableTemplaterIntegration) {
+		try {
+			await useTemplaterPluginInFile(app, createdFile);
+		} catch (err) {
+			new Notice(
+				`Note created but Templater failed: ${err instanceof Error ? err.message : String(err)}`,
+			);
+		}
+	}
 
 	// Open note if setting enabled
 	if (options.openNoteAfterCreation) {

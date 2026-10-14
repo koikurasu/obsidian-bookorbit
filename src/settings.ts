@@ -48,6 +48,7 @@ export interface BookOrbitSettings {
 	filenameTemplate: string;
 	openNoteAfterCreation: boolean;
 	templatePath: string;
+	enableTemplaterIntegration: boolean;
 	dateFormat: string;
 	languageFormat: LanguageFormat;
 	downloadCovers: boolean;
@@ -67,6 +68,7 @@ export const DEFAULT_SETTINGS: BookOrbitSettings = {
 	filenameTemplate: '{{title}}',
 	openNoteAfterCreation: true,
 	templatePath: 'templates/book note template.md',
+	enableTemplaterIntegration: false,
 	dateFormat: 'YYYY-MM-DD',
 	languageFormat: 'as-is',
 	downloadCovers: true,
@@ -268,6 +270,22 @@ export class BookOrbitSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.languageFormat)
 					.onChange(async (value) => {
 						this.plugin.settings.languageFormat = value as LanguageFormat;
+						await this.plugin.saveSettings();
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName('Enable Templater integration')
+			.setDesc(
+				'Run Templater on the newly created note so that <% ... %> expressions in your template are evaluated. ' +
+				'Requires the Templater plugin to be installed. ' +
+				'Warning: Templater allows you to execute arbitrary JavaScript code and system commands.',
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.enableTemplaterIntegration)
+					.onChange(async (value) => {
+						this.plugin.settings.enableTemplaterIntegration = value;
 						await this.plugin.saveSettings();
 					}),
 			);
